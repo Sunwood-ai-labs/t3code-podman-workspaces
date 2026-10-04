@@ -1,0 +1,6 @@
+[Unit]
+Description=Private T3 Code network for @USER@
+
+[Network]
+NetworkName=t3code-@USER@
+Driver=bridge

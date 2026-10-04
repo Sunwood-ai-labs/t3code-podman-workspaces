@@ -1,0 +1,33 @@
+[Unit]
+Description=T3 Code workspace for @USER@
+
+[Container]
+Image=@T3_IMAGE@
+ContainerName=t3code-@USER@
+User=dev
+WorkingDir=/workspace
+Network=t3code-@USER@.network
+Volume=t3code-@USER@-home:/home/dev
+Volume=t3code-@USER@-workspace:/workspace
+Volume=t3code-@USER@-data:/data
+EnvironmentFile=../../t3code/@USER@.env
+Exec=t3 serve --host 0.0.0.0 --port @T3_PORT@ --base-dir /data/t3
+PodmanArgs=--memory=@T3_MEMORY@
+PodmanArgs=--cpus=@T3_CPUS@
+PodmanArgs=--network-alias=t3code-@USER@
+PidsLimit=@T3_PIDS_LIMIT@
+NoNewPrivileges=true
+DropCapability=all
+HealthCmd=node -e "fetch('http://127.0.0.1:@T3_PORT@/').then(r=>process.exit(r.status < 500 ? 0 : 1)).catch(()=>process.exit(1))"
+HealthInterval=30s
+HealthTimeout=5s
+HealthStartPeriod=1m
+HealthRetries=3
+HealthOnFailure=kill
+
+[Service]
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
