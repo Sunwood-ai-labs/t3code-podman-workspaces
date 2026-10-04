@@ -1,0 +1,40 @@
+ARG NODE_VERSION=24.15.0
+FROM docker.io/library/node:${NODE_VERSION}-bookworm-slim
+
+ARG T3_VERSION=0.0.45
+ARG CLAUDE_CODE_VERSION=2.1.289
+ARG CODEX_VERSION=0.160.0
+
+ENV HOME=/home/dev \
+    T3CODE_HOME=/data/t3 \
+    T3_PORT=3773
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        libatomic1 \
+        openssh-client \
+        ripgrep \
+        tini \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupmod --new-name dev node \
+    && usermod --login dev --home /home/dev --move-home node \
+    && mkdir -p /home/dev /workspace /data \
+    && chown -R 1000:1000 /home/dev /workspace /data
+
+RUN npm install --global --omit=dev --no-audit --no-fund \
+        "t3@${T3_VERSION}" \
+        "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+        "@openai/codex@${CODEX_VERSION}" \
+    && npm cache clean --force \
+    && rm -rf /root/.npm
+
+COPY --chmod=755 image/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+WORKDIR /workspace
+USER dev:dev
+
+EXPOSE 3773
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
