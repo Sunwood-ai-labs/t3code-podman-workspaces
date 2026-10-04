@@ -1,0 +1,45 @@
+# HTTP is explicitly redirected to the configured public HTTPS port because
+# the rootless host publishes a non-standard port (typically 8443).
+http://@@USER@@.@@T3_DOMAIN@@ {
+	redir https://@@USER@@.@@T3_DOMAIN@@@@CADDY_HTTPS_PORT_SUFFIX@@{uri} 308
+}
+
+https://@@USER@@.@@T3_DOMAIN@@ {
+	tls internal
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+
+	log {
+		output stdout
+		format filter {
+			wrap json
+			request>headers>Authorization delete
+			request>headers>Cookie delete
+			request>uri query {
+				delete token
+				delete access_token
+				delete id_token
+				delete code
+				delete session
+				delete api_key
+			}
+		}
+	}
+
+	# Optional SSO. See the commented optional_sso snippet in Caddyfile.tmpl.
+	# import optional_sso
+
+	reverse_proxy @@UPSTREAM@@ {
+		# T3-specific Host/Origin validation has not been verified against v0.0.45.
+		# Preserve the incoming Host; leave Caddy's standard X-Forwarded-* behavior on.
+		header_up Host {http.request.host}
+		# Caddy handles WebSocket upgrades automatically. Leave stream_timeout unset;
+		# allow long-running connections, and give them time to drain on reload.
+		stream_close_delay 5m
+	}
+}

@@ -1,0 +1,19 @@
+[Unit]
+Description=T3 Code Caddy reverse proxy
+
+[Container]
+Image=@@CADDY_IMAGE@@
+ContainerName=t3code-caddy
+LogDriver=journald
+PublishPort=@@CADDY_HTTP_PORT@@:80
+PublishPort=@@CADDY_HTTPS_PORT@@:443
+Volume=%h/.config/t3code/caddy/Caddyfile:/etc/caddy/Caddyfile:ro,Z
+Volume=t3code-caddy-data:/data:Z
+Volume=t3code-caddy-config:/config:Z
+@@NETWORKS@@
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
