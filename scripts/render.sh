@@ -39,6 +39,7 @@ render_template() {
     line=${line//@T3_CPUS@/$T3_CPUS}
     line=${line//@T3_PIDS_LIMIT@/$T3_PIDS_LIMIT}
     line=${line//@T3_DEFAULT_THEME@/$theme}
+    line=${line//@T3_DEFAULT_APPEARANCE@/$APPEARANCE}
     printf '%s\n' "$line"
   done < "$template" > "$output"
   chmod 0644 "$output"
@@ -50,6 +51,9 @@ read -r -a THEMES <<< "${T3_DEFAULT_THEMES:-}"
 for theme in "${THEMES[@]}"; do
   [[ $theme =~ ^[a-z0-9-]+$ ]] || die "invalid theme id in T3_DEFAULT_THEMES: $theme"
 done
+
+APPEARANCE=${T3_DEFAULT_APPEARANCE:-}
+[[ -z $APPEARANCE || $APPEARANCE =~ ^(system|light|dark)$ ]] || die "T3_DEFAULT_APPEARANCE must be system, light, dark, or empty"
 
 user_index=0
 for user in "${USERS[@]}"; do

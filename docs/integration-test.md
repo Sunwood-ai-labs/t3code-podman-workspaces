@@ -26,13 +26,13 @@ This is a single-run record on a development machine, not a production Linux hos
 | Persistence | `systemctl --user restart`, and `uninstall.sh` followed by `install.sh` | Paired session, files in `/workspace` and `/home/dev`, and Caddy's CA survived. `uninstall.sh` kept all 11 volumes. |
 | Crash recovery | `podman kill t3code-user3` | Restarted by systemd within about 15 seconds. |
 | Browser | Headless Chrome 1360x860 driven by Playwright against `https://user1.t3.localhost:8443` (certificate errors ignored) | Pairing link signed in and redirected to the Welcome flow; the three setup steps completed; `/workspace` was added as a project from the UI; the WebSocket stayed open; the built-in terminal ran `id` as `dev` in `/workspace`; sending a message started Claude Code, which stopped with "Not logged in" because no credentials were configured. |
-| Agents | In `user1`, with existing Claude Code and Codex subscription logins copied into `/home/dev` (access tokens only, no refresh tokens) | From the browser UI, Claude Code (Claude Sonnet 5.5) created `/workspace/hello.txt` and Codex (GPT-6-Luna) created `/workspace/codex.txt`; both replied in the thread. `claude -p` and `codex exec` also answered from the container shell. |
-| Default themes | Fresh browser profile, one pairing per user | `user1` opened with `ocean`, `user2` with `grove`, `user3` with `ember`, as assigned by `T3_DEFAULT_THEMES`. See the screenshots below. |
+| Agents | In all three workspaces, with existing Claude Code and Codex subscription logins copied into `/home/dev` (access tokens only, no refresh tokens) | From the browser UI, Claude Code (Claude Sonnet 5.5) and Codex (GPT-6-Luna) each created a file in `/workspace` in `user1`, `user2` and `user3` and replied in the thread: six runs, six files with the expected content. After copying a login, **Settings > Providers > Refresh provider status** was needed before the Codex models appeared. |
+| Default themes | Fresh browser profile, one pairing per user | `user1` opened with `ocean`, `user2` with `grove`, `user3` with `ember`, all in the dark color scheme, as set by `T3_DEFAULT_THEMES` and `T3_DEFAULT_APPEARANCE`. See the screenshots below. |
 | Idle memory | `scripts/status.sh` | About 250–330 MB per workspace. |
 
 ![Browser session through the proxy](images/browser-session.png)
 
-![Codex run from the browser](images/agent-run.png)
+Each screenshot shows a completed Codex run in that workspace.
 
 | `user1` (ocean) | `user2` (grove) | `user3` (ember) |
 | --- | --- | --- |

@@ -13,6 +13,7 @@ Volume=t3code-@USER@-data:/data
 EnvironmentFile=../../t3code/@USER@.env
 Environment=T3_PORT=@T3_PORT@
 Environment=T3_DEFAULT_THEME=@T3_DEFAULT_THEME@
+Environment=T3_DEFAULT_APPEARANCE=@T3_DEFAULT_APPEARANCE@
 PodmanArgs=--memory=@T3_MEMORY@
 PodmanArgs=--cpus=@T3_CPUS@
 PodmanArgs=--network-alias=t3code-@USER@

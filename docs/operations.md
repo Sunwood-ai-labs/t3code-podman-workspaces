@@ -124,12 +124,12 @@ systemctl --user start "t3code-${user}.service"
 
 ## ワークスペースごとの既定テーマ
 
-T3 Code はテーマをブラウザーの localStorage に保存し、サーバー側の設定を持ちません。どのワークスペースを開いているか見分けやすくするため、`config.env` の `T3_DEFAULT_THEMES` に並べたテーマを `users.conf` の順に割り当てます(ユーザー数のほうが多いときは先頭から繰り返します)。イメージの entrypoint が起動時に `index.html` へ 1 行のスクリプトを差し込み、テーマ未設定のブラウザーにだけ既定値を入れます。利用者が Settings > Appearance で選んだテーマが優先されます。
+T3 Code はテーマをブラウザーの localStorage に保存し、サーバー側の設定を持ちません。どのワークスペースを開いているか見分けやすくするため、`config.env` の `T3_DEFAULT_THEMES` に並べたテーマを `users.conf` の順に割り当てます(ユーザー数のほうが多いときは先頭から繰り返します)。イメージの entrypoint が起動時に `index.html` へ 1 行のスクリプトを差し込み、テーマ未設定のブラウザーにだけ既定値を入れます。配色(ライト / ダーク)の既定は `T3_DEFAULT_APPEARANCE`(`system`、`light`、`dark`)で決めます。テーマごとの差はダークのほうがはっきり出るので、既定は `dark` です。利用者が Settings > Appearance で選んだテーマと配色が優先されます。
 
 - 割り当てを変えたら `scripts/render.sh` と `scripts/install.sh` を再実行します。すでにテーマが保存されているブラウザーには反映されません。
 - `users.conf` の途中にユーザーを追加・削除すると、後ろのユーザーの既定テーマがずれます。
-- `T3_DEFAULT_THEMES` を空にすると T3 Code 本来の既定のままになります。
-- この仕組みは T3 Code 0.0.45 の `index.html` と localStorage のキー `t3code:theme` に依存します。バージョンを上げたら表示を確認してください。差し込みに失敗しても、サーバーは元の `index.html` で起動します。
+- `T3_DEFAULT_THEMES` や `T3_DEFAULT_APPEARANCE` を空にすると、その項目は T3 Code 本来の既定のままになります。
+- この仕組みは T3 Code 0.0.45 の `index.html` と localStorage のキー `t3code:theme`、`t3code:theme-appearance-mode` に依存します。バージョンを上げたら表示を確認してください。差し込みに失敗しても、サーバーは元の `index.html` で起動します。
 
 ## トラブルシュート
 
