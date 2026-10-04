@@ -31,6 +31,13 @@ RUN npm install --global --omit=dev --no-audit --no-fund \
     && npm cache clean --force \
     && rm -rf /root/.npm
 
+# The entrypoint rewrites index.html from this pristine copy to seed a default
+# UI theme, so dev needs to own that one file.
+RUN index_html="$(find /usr/local/lib/node_modules/t3 -path '*/client/index.html' | head -n 1)" \
+    && test -n "${index_html}" \
+    && cp "${index_html}" "${index_html}.orig" \
+    && chown dev:dev "${index_html}"
+
 COPY --chmod=755 image/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /workspace

@@ -26,9 +26,14 @@ This is a single-run record on a development machine, not a production Linux hos
 | Persistence | `systemctl --user restart`, and `uninstall.sh` followed by `install.sh` | Paired session, files in `/workspace` and `/home/dev`, and Caddy's CA survived. `uninstall.sh` kept all 11 volumes. |
 | Crash recovery | `podman kill t3code-user3` | Restarted by systemd within about 15 seconds. |
 | Browser | Headless Chrome 1360x860 driven by Playwright against `https://user1.t3.localhost:8443` (certificate errors ignored) | Pairing link signed in and redirected to the Welcome flow; the three setup steps completed; `/workspace` was added as a project from the UI; the WebSocket stayed open; the built-in terminal ran `id` as `dev` in `/workspace`; sending a message started Claude Code, which stopped with "Not logged in" because no credentials were configured. |
+| Default themes | Fresh browser profile, one pairing per user | `user1` opened with `ocean`, `user2` with `grove`, `user3` with `ember`, as assigned by `T3_DEFAULT_THEMES`. See the screenshots below. |
 | Idle memory | `scripts/status.sh` | About 250–330 MB per workspace. |
 
 ![Browser session through the proxy](images/browser-session.png)
+
+| `user1` (ocean) | `user2` (grove) | `user3` (ember) |
+| --- | --- | --- |
+| ![user1](images/theme-user1.png) | ![user2](images/theme-user2.png) | ![user3](images/theme-user3.png) |
 
 The browser run used `T3_DOMAIN=t3.localhost`, because Chromium resolves `*.localhost` to the loopback address without a hosts file entry. The `curl` checks used the default domain.
 

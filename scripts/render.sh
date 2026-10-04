@@ -30,7 +30,7 @@ for old_unit in "$QUADLET_BUILD_DIR"/t3code-*.network "$QUADLET_BUILD_DIR"/t3cod
 done
 
 render_template() {
-  local template=$1 output=$2 user=$3 line
+  local template=$1 output=$2 user=$3 theme=${4-} line
   while IFS= read -r line || [[ -n $line ]]; do
     line=${line//@USER@/$user}
     line=${line//@T3_IMAGE@/$T3_IMAGE}
@@ -38,14 +38,28 @@ render_template() {
     line=${line//@T3_MEMORY@/$T3_MEMORY}
     line=${line//@T3_CPUS@/$T3_CPUS}
     line=${line//@T3_PIDS_LIMIT@/$T3_PIDS_LIMIT}
+    line=${line//@T3_DEFAULT_THEME@/$theme}
     printf '%s\n' "$line"
   done < "$template" > "$output"
   chmod 0644 "$output"
 }
 
+# Default UI themes are assigned in users.conf order, cycling through
+# T3_DEFAULT_THEMES. Leave it empty to keep T3 Code's own default.
+read -r -a THEMES <<< "${T3_DEFAULT_THEMES:-}"
+for theme in "${THEMES[@]}"; do
+  [[ $theme =~ ^[a-z0-9-]+$ ]] || die "invalid theme id in T3_DEFAULT_THEMES: $theme"
+done
+
+user_index=0
 for user in "${USERS[@]}"; do
+  theme=""
+  if ((${#THEMES[@]} > 0)); then
+    theme=${THEMES[user_index % ${#THEMES[@]}]}
+  fi
   render_template "$NETWORK_TEMPLATE" "${QUADLET_BUILD_DIR}/t3code-${user}.network" "$user"
-  render_template "$CONTAINER_TEMPLATE" "${QUADLET_BUILD_DIR}/t3code-${user}.container" "$user"
+  render_template "$CONTAINER_TEMPLATE" "${QUADLET_BUILD_DIR}/t3code-${user}.container" "$user" "$theme"
+  user_index=$((user_index + 1))
 done
 
 if [[ -f ${REPO_ROOT}/scripts/render-caddy.sh ]]; then
