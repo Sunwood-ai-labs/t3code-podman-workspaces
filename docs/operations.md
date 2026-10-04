@@ -129,5 +129,7 @@ systemctl --user start "t3code-${user}.service"
 - **コンテナ起動失敗**: `systemctl --user status t3code-user1.service`、`journalctl --user -u t3code-user1.service`、`podman logs t3code-user1` を確認します。イメージに `t3`、Node.js、`dev` (UID/GID 1000) があることと、`T3_IMAGE` がローカルに存在することを確認します。
 - **Caddy から接続できない**: Caddy コンテナが各ユーザーのネットワークに参加していること、コンテナが `0.0.0.0:3773` で待ち受けていること、`t3code-<user>:3773` がコンテナ間 DNS で解決されることを確認します。ユーザーコンテナに `PublishPort=` が設定されていないことも確認します。
 - **HTTPS や公開 URL の不一致**: DNS、証明書発行条件、ファイアウォール、および `CADDY_HTTPS_PORT` を確認します。公開リンクを作り直すときは `scripts/pair.sh <user>` を使います。
+- **ネットワーク設定の変更が反映されない**: 既存の Podman ネットワークは `install.sh` を再実行しても作り直されません。`quadlet/t3code-user.network.in` を変えたとき(`isolate=strict` を含まない古い版からの更新を含む)は、`scripts/uninstall.sh` の後に `scripts/install.sh` を実行します。ボリュームは残ります。`podman network inspect t3code-<user> --format '{{json .Options}}'` で `isolate` が `strict` であることを確認します。
+- **`systemctl --user --failed` に `podman healthcheck run` が残る**: 起動直後の最初のヘルスチェックは、サーバーが待ち受けを始める前に実行されて失敗します。コンテナが `healthy` になっていれば問題ありません。`systemctl --user reset-failed` で消せます。
 - **再起動後にサービスが起動しない**: `loginctl show-user "$USER" -p Linger` を確認し、必要なら管理者へ linger 有効化を依頼します。
 - **使用量を確認する**: `scripts/status.sh` はサービス状態、Podman コンテナ状態、稼働中コンテナの現在メモリ使用量を表示します。停止中または未作成のコンテナのメモリは `n/a` です。

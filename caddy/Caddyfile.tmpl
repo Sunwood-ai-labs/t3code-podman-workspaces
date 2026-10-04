@@ -4,6 +4,10 @@
 	admin off
 	# Per-user HTTP sites below redirect to the public, possibly non-standard TLS port.
 	auto_https disable_redirects
+	# Only TCP is published, so do not advertise HTTP/3.
+	servers {
+		protocols h1 h2
+	}
 }
 
 # Reject HTTP requests for hosts that are not listed in users.conf.

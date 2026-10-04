@@ -14,15 +14,15 @@ The host deployment account can administer the rootless containers and persisten
 
 ## Current configuration and intended controls
 
-These are the initial implementation's specified controls, **not verified isolation or end-to-end test results**:
+These are the controls configured by this repository. The [integration test record](integration-test.md) lists which of them were exercised and which were not:
 
 | Control | Boundary / limitation |
 | --- | --- |
 | Rootless Podman + Quadlet | Run under the deployment account; kernel/runtime compromise and access available to that account remain risks. |
-| One container and network per user | Separate direct network membership. Caddy joins all networks; outbound access and access through Caddy require separate controls. |
+| One container and network per user | Each network sets `isolate=strict`, which blocks traffic between workspace networks (without it, Podman bridge networks route to each other by IP). Caddy joins all networks; outbound access and access through Caddy require separate controls. |
 | No user container host ports | Workspace port `3773` is reached through Caddy. Caddy alone publishes host `8080` and `8443`. |
 | Caddy `tls internal` | Encrypt browser-to-Caddy traffic at `https://<user>.t3.example.internal:8443`. Client root trust is managed by administrators; upstream HTTP is not encrypted by this setting. |
-| Required T3 one-time pairing/session | Establish and require an application session for each workspace. Treat pairing links and session tokens as secrets. |
+| Required T3 one-time pairing/session | Establish and require an application session for each workspace. Treat pairing links and session tokens as secrets. T3 Code prints an initial pairing URL to the container log at startup, so restrict journal access. Caddy adds `Secure` to the session cookie. |
 | Access logs to Caddy stdout/journald | Intended HTTP access record, not a complete audit of agent commands or filesystem changes. |
 | Versioned T3 image and resource settings | T3 npm `0.0.45`, image `localhost/t3code-workspace:0.0.45`; limits require host and rendered-unit validation. A tag is not an immutable digest. |
 

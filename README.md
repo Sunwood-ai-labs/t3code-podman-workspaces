@@ -109,7 +109,9 @@ The image and operations documents are being prepared separately; links may be u
 
 ## Status
 
-Initial implementation. The coordinating maintainer plans to run integration tests and record their results later; **no integration test results are available yet**. T3 Code is on the `0.0.x` release line; validate behavior and upgrades in your environment.
+Initial implementation, integration-tested once on 2026-10-04 with three users on a rootless Podman 5.8 development machine. HTTPS and WebSocket proxying, pairing, per-user session separation, network isolation between workspaces, resource limits, and data persistence across restarts passed. See the [integration test record](docs/integration-test.md).
+
+**Not verified:** a real browser session through the proxy, running agents with real credentials, a production Linux host and host reboot, SSO, and outbound filtering (not implemented). T3 Code is on the `0.0.x` release line; validate behavior and upgrades in your environment.
 
 ## License
 

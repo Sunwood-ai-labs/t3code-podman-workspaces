@@ -29,7 +29,7 @@ The build → render → install → pair lifecycle uses `scripts/build-image.sh
 
 ## Networks and authentication boundaries
 
-Each workspace joins its corresponding `t3code-<user>` network. User containers do not share a workspace network with one another. Caddy joins **every** workspace network so it can reach all upstreams; it is a shared, privileged point within this topology, despite running rootless. Only Caddy exposes host ports.
+Each workspace joins its corresponding `t3code-<user>` network. User containers do not share a workspace network with one another, and each network sets `isolate=strict` so that Podman does not route between them. Caddy joins **every** workspace network so it can reach all upstreams; it is a shared, privileged point within this topology, despite running rootless. Only Caddy exposes host ports.
 
 This separates direct container-network membership. It does not guarantee isolation from other users reached through public Caddy routes, host services, outbound networks, or a kernel/runtime exploit. Rootless operation does not create a VM boundary, and network separation does not enforce per-user application authorization. See [security](security.md).
 

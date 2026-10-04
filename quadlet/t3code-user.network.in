@@ -4,3 +4,6 @@ Description=Private T3 Code network for @USER@
 [Network]
 NetworkName=t3code-@USER@
 Driver=bridge
+# Podman bridge networks can route to each other by default. Block traffic
+# between this network and every other network so workspaces stay separated.
+Options=isolate=strict

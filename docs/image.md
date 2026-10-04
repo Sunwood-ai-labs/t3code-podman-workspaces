@@ -53,7 +53,7 @@ PODMAN_CONNECTION=t3code-lab bash scripts/build-image.sh
 
 ## ペアリングとリバースプロキシ
 
-以下は `t3@0.0.45` のコード確認とコンテナへの直接 HTTP/WebSocket リクエストに基づきます。実際の Caddy 経由の HTTPS 試験はしていません。
+以下は `t3@0.0.45` のコード確認とコンテナへの直接 HTTP/WebSocket リクエストに基づきます。Caddy 経由の HTTPS 試験は[結合テストの記録](integration-test.md)にあります。
 
 - ペアリングリンクは `/pair#token=...` です。ブラウザーは fragment の資格情報を読み取り、履歴から除去した後、`GET /api/auth/session`、`POST /api/auth/browser-session` (`{"credential":"…"}`)、再度の session 確認を行います。`--base-url` は出力するリンクの URL を作る指定で、待受先や Origin allowlist の設定ではありません。ペアリング資格情報は既定5分で失効し、一回だけ使用できます。今回の確認では TTL を `20m` に指定しました。 [auth.ts](https://github.com/pingdotgg/t3code/blob/v0.0.45/apps/web/src/environments/primary/auth.ts) · [HTTP auth](https://github.com/pingdotgg/t3code/blob/v0.0.45/apps/server/src/auth/http.ts) · [CLI](https://github.com/pingdotgg/t3code/blob/v0.0.45/apps/server/src/cli/auth.ts)
 - 通常のブラウザー WebSocket は同一 origin の `/ws` を使い、HTTP session cookie で認証します。v0.0.45 では `orchestrationProtocol=1` などのクエリが付きます。Bearer/DPoP クライアント向けには `POST /api/auth/websocket-ticket` で ticket を発行し、`/ws?wsTicket=…` に接続する経路もあります。今回の upgrade は ticket 経路で確認しました。 [接続 URL](https://github.com/pingdotgg/t3code/blob/v0.0.45/packages/client-runtime/src/connection/resolver.ts) · [ticket 認可](https://github.com/pingdotgg/t3code/blob/v0.0.45/packages/client-runtime/src/authorization/remote.ts)
@@ -65,7 +65,7 @@ PODMAN_CONNECTION=t3code-lab bash scripts/build-image.sh
 
 ## 制約と未検証
 
-- Caddy の実構成、HTTPS 証明書、Caddy 経由の pairing/auth、ユーザー間のネットワーク分離は未検証です。上記の proxy 要件を担当 C の設定と結合テストで確認してください。
+- このイメージ単体の検証では、Caddy の実構成、HTTPS 証明書、Caddy 経由の pairing/auth、ユーザー間のネットワーク分離を確認していません。これらは結合テストで確認しました。[結合テストの記録](integration-test.md)を参照してください。
 - `Secure` cookie 属性がなく、アプリケーションに Host/Origin allowlist もありません。外部公開は HTTPS のみとし、アプリコンテナの直接公開を避けてください。
 - 起動時の自動 Welcome/project bootstrap は未検証です。`t3 project add` で明示追加したプロジェクトと pairing session の restart 後の残存は確認しました。
 - イメージは Podman Linux amd64 で確認しました。別アーキテクチャ、Linux 本番ホストでの Quadlet/systemd 起動、実際の Claude/Codex API 利用、Caddy の TLS 終端は未検証です。

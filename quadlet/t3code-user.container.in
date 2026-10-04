@@ -11,7 +11,7 @@ Volume=t3code-@USER@-home:/home/dev
 Volume=t3code-@USER@-workspace:/workspace
 Volume=t3code-@USER@-data:/data
 EnvironmentFile=../../t3code/@USER@.env
-Exec=t3 serve --host 0.0.0.0 --port @T3_PORT@ --base-dir /data/t3
+Environment=T3_PORT=@T3_PORT@
 PodmanArgs=--memory=@T3_MEMORY@
 PodmanArgs=--cpus=@T3_CPUS@
 PodmanArgs=--network-alias=t3code-@USER@

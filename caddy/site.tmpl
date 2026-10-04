@@ -35,9 +35,11 @@ https://@@USER@@.@@T3_DOMAIN@@ {
 	# import optional_sso
 
 	reverse_proxy @@UPSTREAM@@ {
-		# T3-specific Host/Origin validation has not been verified against v0.0.45.
+		# T3 Code v0.0.45 rebuilds request URLs from Host and X-Forwarded-Proto.
 		# Preserve the incoming Host; leave Caddy's standard X-Forwarded-* behavior on.
 		header_up Host {http.request.host}
+		# T3 Code does not mark its session cookie Secure; add it at the TLS edge.
+		header_down Set-Cookie "^(.*)$" "$1; Secure"
 		# Caddy handles WebSocket upgrades automatically. Leave stream_timeout unset;
 		# allow long-running connections, and give them time to drain on reload.
 		stream_close_delay 5m
