@@ -35,7 +35,7 @@ PODMAN_CONNECTION=t3code-lab bash scripts/build-image.sh
 
 ## 実機検証
 
-2026-10-04、Windows 11 上の Podman 5.8.3 で、この検証専用に作成した rootless Linux amd64 マシン `t3code-lab` を使いました。既存の `openmausbot` と `nekoneko-demo` は操作していません。コマンドでは接続先を明示し、既定接続も変更していません。
+2026-10-04、Windows 11 上の Podman 5.8.3 で、この検証専用に作成した rootless Linux amd64 マシン `t3code-lab` を使いました。コマンドでは接続先を明示し、既定の接続は変更していません。
 
 | 確認 | 実測結果 |
 | --- | --- |
