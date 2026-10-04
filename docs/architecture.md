@@ -43,16 +43,17 @@ There are two distinct authentication layers: required T3 pairing/session authen
 | Rendered Caddy/Quadlet configuration | Derived routes, networks, services, and limits; installation paths and restart procedure are specified by [operations](operations.md). |
 | Named volume `t3code-caddy-data` | Caddy persistent PKI state, including the CA certificate and private keys. Preserve and restrict access; distribute only the public `root.crt`. |
 | Named volume `t3code-caddy-config` | Caddy persistent configuration state; do not treat it as a public artifact. |
-| Per-user persistent workspace storage | Workspace files and application/provider state as defined by the image. Exact mounts and paths belong to [image](image.md) and [operations](operations.md); this document does not prescribe them. |
+| Named volumes `t3code-<user>-home`, `-workspace`, `-data` | Mounted at `/home/dev` (agent sign-ins and tool configuration), `/workspace` (project files) and `/data` (T3 Code state under `/data/t3`, including paired sessions). They survive restarts, reinstalls and `uninstall.sh` unless `--purge-volumes` is given. |
+| Host `~/.config/t3code/<user>.env` | Per-user environment variables such as API keys, mode `600`, passed to the container at start. |
 | Caddy stdout / journald | Intended destination for access logs. Retention, access controls, and audit collection are operator responsibilities. |
 
-Image and operations documentation are being prepared separately. Do not infer exact persistent paths or backup coverage until those documents and mounts are integrated. Backups must cover both user data and sensitive Caddy state; losing or replacing the CA can require redistributing client trust.
+Backups must cover both user data and sensitive Caddy state; losing or replacing the CA can require redistributing client trust.
 
 ## Capacity and limits
 
 This is a single-host deployment with one container per user and one shared Caddy instance. The host, rootless deployment account, storage, and Caddy are common failure domains. There is no described high availability, cross-host scheduling, or automatic failover.
 
-The shared settings currently specify per-workspace limits of `4g` memory, `2` CPUs, and `2048` PIDs. Their application depends on the rendered units and host cgroup support and has not been integration-tested. Agent workloads, disk growth, outbound traffic, and provider quotas still need capacity planning.
+The shared settings currently specify per-workspace limits of `4g` memory, `2` CPUs, and `2048` PIDs. They were confirmed on the running containers in the integration test; their effect under real agent load was not measured. Agent workloads, disk growth, outbound traffic, and provider quotas still need capacity planning.
 
 T3 Code is on the `0.0.x` release line. CLI, pairing, persistence, and proxy behavior may change; validate a pinned upgrade before rolling it out. The T3 image is version-tagged; Caddy's `:2` is a moving major-version tag, not an immutable pin.
 

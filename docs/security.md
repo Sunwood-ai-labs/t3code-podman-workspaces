@@ -2,9 +2,9 @@
 
 [Architecture](architecture.md) · [English README](../README.md) · [日本語 README](../README.ja.md)
 
-The initial deployment assumes **trusted internal users** and a trusted host administrator. T3 Code hosts agents that can execute arbitrary commands and code, including code influenced by repositories, prompts, dependencies, and tool output. Treat a workspace as a code execution environment with access to its credentials, not merely a web application.
+The deployment assumes **trusted internal users** and a trusted host administrator. T3 Code hosts agents that can execute arbitrary commands and code, including code influenced by repositories, prompts, dependencies, and tool output. Treat a workspace as a code execution environment with access to its credentials, not merely a web application.
 
-All containers share the host's Linux kernel. Rootless Podman and separate networks are useful boundaries, but do not provide a VM boundary or a guarantee against malicious tenants. No integration test results are available yet; this document records the configured design and distinguishes additional recommendations.
+All containers share the host's Linux kernel. Rootless Podman and separate networks are useful boundaries, but do not provide a VM boundary or a guarantee against malicious tenants. This document records the configured design and distinguishes additional recommendations; the [integration test record](integration-test.md) lists what was exercised.
 
 ## Threat model
 
