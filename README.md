@@ -115,7 +115,9 @@ Initial implementation, integration-tested once on 2026-10-04 with three users o
 
 A headless Chrome session through the proxy also paired, completed setup, added `/workspace` as a project, and used the terminal.
 
-**Not verified:** running agents with real credentials, a production Linux host and host reboot, SSO, and outbound filtering (not implemented). T3 Code is on the `0.0.x` release line; validate behavior and upgrades in your environment.
+Claude Code and Codex each completed a task from the browser using existing subscription logins.
+
+**Not verified:** agent login and API-key setup inside a workspace, a production Linux host and host reboot, SSO, and outbound filtering (not implemented). T3 Code is on the `0.0.x` release line; validate behavior and upgrades in your environment.
 
 ## License
 

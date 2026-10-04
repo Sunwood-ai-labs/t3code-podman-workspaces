@@ -26,10 +26,13 @@ This is a single-run record on a development machine, not a production Linux hos
 | Persistence | `systemctl --user restart`, and `uninstall.sh` followed by `install.sh` | Paired session, files in `/workspace` and `/home/dev`, and Caddy's CA survived. `uninstall.sh` kept all 11 volumes. |
 | Crash recovery | `podman kill t3code-user3` | Restarted by systemd within about 15 seconds. |
 | Browser | Headless Chrome 1360x860 driven by Playwright against `https://user1.t3.localhost:8443` (certificate errors ignored) | Pairing link signed in and redirected to the Welcome flow; the three setup steps completed; `/workspace` was added as a project from the UI; the WebSocket stayed open; the built-in terminal ran `id` as `dev` in `/workspace`; sending a message started Claude Code, which stopped with "Not logged in" because no credentials were configured. |
+| Agents | In `user1`, with existing Claude Code and Codex subscription logins copied into `/home/dev` (access tokens only, no refresh tokens) | From the browser UI, Claude Code (Claude Sonnet 5.5) created `/workspace/hello.txt` and Codex (GPT-6-Luna) created `/workspace/codex.txt`; both replied in the thread. `claude -p` and `codex exec` also answered from the container shell. |
 | Default themes | Fresh browser profile, one pairing per user | `user1` opened with `ocean`, `user2` with `grove`, `user3` with `ember`, as assigned by `T3_DEFAULT_THEMES`. See the screenshots below. |
 | Idle memory | `scripts/status.sh` | About 250–330 MB per workspace. |
 
 ![Browser session through the proxy](images/browser-session.png)
+
+![Codex run from the browser](images/agent-run.png)
 
 | `user1` (ocean) | `user2` (grove) | `user3` (ember) |
 | --- | --- | --- |
@@ -55,7 +58,9 @@ The browser run used `T3_DOMAIN=t3.localhost`, because Chromium resolves `*.loca
 ## Not verified
 
 - A browser that trusts Caddy's internal CA (the browser run ignored certificate errors), and browsers other than Chrome.
-- Running Claude Code or Codex with real credentials inside a workspace. The agent process starts, but no authenticated turn was run.
+- Agent logins performed inside a workspace (`claude auth login`, `codex login`), API-key authentication through `~/.config/t3code/<user>.env`, and token refresh. The agent test reused existing logins.
+- Cursor, Grok, OpenCode and Antigravity. Antigravity needs a separate runtime download of about 682 MB in the workspace and a Google sign-in; neither was attempted.
+- Codex's own sandbox. Codex warned that `bubblewrap` is not installed and the run used the Full access mode.
 - A production Linux host, a host reboot, SELinux enforcing, and architectures other than amd64.
 - SSO through `forward_auth`, and replacing the internal CA with a corporate certificate.
 - Outbound filtering and restricting access to internal networks (not implemented).
