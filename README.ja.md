@@ -26,6 +26,20 @@
 - **systemd による管理**: `users.conf` から Quadlet ユニットを生成します。異常終了時の再起動とヘルスチェック付きです。
 - **SSO の接続口(任意)**: oauth2-proxy や Authelia 向けの `forward_auth` スニペットを、コメントアウトした状態で用意しています。
 
+## スクリーンショット
+
+`user1` のワークスペース(`ocean` テーマ)で Codex を実行した画面です。依頼、エージェントの返答、スレッド一覧が見えます。
+
+![Codex 実行後の user1 のワークスペース](docs/images/theme-user1.png)
+
+同じ依頼を `user2` のワークスペース(`grove` テーマ)で実行した画面です。スレッド、ファイル、エージェントのサインインはワークスペースごとに別です。
+
+![Codex 実行後の user2 のワークスペース](docs/images/theme-user2.png)
+
+`user3` のワークスペース(`ember` テーマ)です。
+
+![Codex 実行後の user3 のワークスペース](docs/images/theme-user3.png)
+
 ## 構成
 
 ```mermaid

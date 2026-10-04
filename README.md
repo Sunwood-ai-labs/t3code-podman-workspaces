@@ -26,6 +26,20 @@ Three workspaces on one host, each after a Codex run started from the browser. E
 - **Managed by systemd**: Quadlet units generated from `users.conf`, restarted on failure, with a health check.
 - **Optional SSO hook**: a commented `forward_auth` snippet for oauth2-proxy or Authelia.
 
+## Screenshots
+
+A Codex run in `user1`'s workspace (`ocean` theme): the request, the agent's reply, and the thread list.
+
+![user1 workspace after a Codex run](docs/images/theme-user1.png)
+
+The same task in `user2`'s workspace (`grove` theme). It has its own threads, files and agent sign-in.
+
+![user2 workspace after a Codex run](docs/images/theme-user2.png)
+
+And in `user3`'s workspace (`ember` theme).
+
+![user3 workspace after a Codex run](docs/images/theme-user3.png)
+
 ## Architecture
 
 ```mermaid
