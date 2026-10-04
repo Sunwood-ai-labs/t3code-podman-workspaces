@@ -16,7 +16,7 @@
 
 2. 社内 DNS で `user1.<T3_DOMAIN>` などを Caddy ホストへ向け、Caddy が HTTPS 用証明書を取得できるようにします。`config.env` の `T3_DOMAIN`、`CADDY_HTTP_PORT`、`CADDY_HTTPS_PORT` が実際の公開設定と一致していることを確認します。
 
-3. 担当 A の `scripts/build-image.sh` で `config.env` の `T3_IMAGE` をビルドします。担当 C の `scripts/render-caddy.sh` が同じ `scripts/render.sh` 実行時に Caddy の Quadlet と Caddyfile を生成します。
+3. `scripts/build-image.sh` で `config.env` の `T3_IMAGE` をビルドします。`scripts/render-caddy.sh` が同じ `scripts/render.sh` 実行時に Caddy の Quadlet と Caddyfile を生成します。
 
 4. リポジトリのルートで生成とインストールを行います。
 
@@ -95,9 +95,25 @@ chmod 600 ~/.config/t3code/user1.env
 systemctl --user restart t3code-user1.service
 ```
 
+## エージェントのサインイン
+
+API キーの代わりにサブスクリプションでサインインする場合は、利用者が自分のワークスペースの中で行います。T3 Code の初期設定画面の Agents、または画面内のターミナルで `claude auth login` や `codex login` を実行します。サインイン情報は `/home/dev`(`t3code-<user>-home` ボリューム)に保存され、再起動後も残ります。
+
+サインインや API キーの設定をした直後は、モデルが選択肢に出ないことがあります。**Settings → Providers → Refresh provider status** を押すと反映されます。Providers 画面の「Authenticated」の表示は、資格情報が無い状態でも出ることがあるので、実際にメッセージを送って確認してください。
+
+## 配置後の確認
+
+`tests/smoke.sh` は、配置後の状態を読み取りと未認証のリクエストだけで検査します。ペアリングトークンは発行も消費もしません。
+
+```bash
+./tests/smoke.sh
+```
+
+各ワークスペースの稼働とヘルス状態、ポート非公開、実行ユーザー、ネットワークの分離設定、Caddy 経由の HTTPS と HTTP リダイレクト、未ペアリングのリクエストと WebSocket の拒否、未登録ホストの拒否、ワークスペース間で名前でも IP でも通信できないことを確認し、失敗があれば 0 以外で終了します。
+
 ## イメージ更新
 
-担当 A のビルドスクリプトで同じ `T3_IMAGE` タグを再ビルドし、Quadlet と Caddy 設定を再生成・インストールします。
+`scripts/build-image.sh` で同じ `T3_IMAGE` タグを再ビルドし、Quadlet と Caddy 設定を再生成・インストールします。
 
 ```bash
 scripts/build-image.sh

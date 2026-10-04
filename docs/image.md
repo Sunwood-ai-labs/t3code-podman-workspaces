@@ -17,6 +17,8 @@ t3 serve --mode web --host 0.0.0.0 --port 3773 \
   --base-dir /data/t3 --auto-bootstrap-project-from-cwd /workspace
 ```
 
+起動時、entrypoint は `T3_DEFAULT_THEME` と `T3_DEFAULT_APPEARANCE` が設定されていれば、T3 Code の `index.html` の先頭へ 1 行のスクリプトを差し込みます。テーマや配色が未設定のブラウザーにだけ既定値を入れるためのものです。そのため、イメージのビルド時に元の `index.html` を `index.html.orig` として残し、`index.html` だけを dev 所有にしています。仕組みと注意点は[運用手順](operations.md)の「ワークスペースごとの既定テーマ」を参照してください。
+
 ## ビルド
 
 リポジトリの `config.env` から `T3_IMAGE` と `T3_VERSION` を読み込みます。Linux + rootless Podman のホストで実行してください。今回の実機ビルドでは `PODMAN_CONNECTION=t3code-lab bash scripts/build-image.sh` を実行しました。

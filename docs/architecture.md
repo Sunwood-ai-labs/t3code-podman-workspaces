@@ -2,7 +2,7 @@
 
 [English README](../README.md) · [日本語 README](../README.ja.md) · [Security](security.md)
 
-This document describes the initial single-host design. Integration test results are not yet available; the coordinating maintainer will add them after validation. Optional extensions below are not part of the default deployment.
+This document describes the single-host design. What has been exercised is listed in the [integration test record](integration-test.md). Optional extensions below are not part of the default deployment.
 
 ## Components
 

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellCheck
+        run: shellcheck -x -P scripts scripts/*.sh tests/*.sh image/entrypoint.sh
+
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render units and Caddyfile
+        run: |
+          bash scripts/render.sh
+          ls -l build/quadlet build/caddy
+      - name: Rendering is reproducible
+        run: |
+          sha256sum build/quadlet/* build/caddy/Caddyfile > /tmp/first.sha256
+          bash scripts/render.sh
+          sha256sum --check /tmp/first.sha256
+      - name: One network and one container unit per user
+        run: |
+          users=$(grep -Ev '^[[:space:]]*(#|$)' users.conf | wc -l)
+          test "$(ls build/quadlet/*.network | wc -l)" -eq "$users"
+          test "$(ls build/quadlet/*.container | wc -l)" -eq "$((users + 1))"
+      - name: Validate the Caddyfile
+        run: |
+          docker run --rm -v "$PWD/build/caddy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2 caddy validate --config /etc/caddy/Caddyfile
+      - name: Installer dry run
+        run: bash scripts/install.sh --dry-run

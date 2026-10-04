@@ -40,6 +40,10 @@ Each screenshot shows a completed Codex run in that workspace.
 
 The browser run used `T3_DOMAIN=t3.localhost`, because Chromium resolves `*.localhost` to the loopback address without a hosts file entry. The `curl` checks used the default domain.
 
+## Repeatable checks
+
+`tests/smoke.sh` repeats the read-only part of this record on any deployment: container and health state, unpublished ports, the runtime user, the network isolation option, HTTPS and the HTTP redirect through Caddy, rejection of unpaired requests and WebSocket upgrades, rejection of unknown hosts, and that no workspace can reach another by name or by IP address. It passed 41 of 41 checks on the three-user test deployment. Pairing, browser sessions, agent runs and persistence are not covered by it.
+
 ## Found and fixed during the test
 
 - **Workspaces could reach each other by IP address.** Separate Podman bridge networks block name resolution between networks but still route between them. `t3code-user1` received HTTP 200 from `t3code-user2`'s address. The network units now set `Options=isolate=strict`; the checks above were run after this change. An existing network keeps its old options, so apply this with `uninstall.sh` followed by `install.sh` (volumes are kept).

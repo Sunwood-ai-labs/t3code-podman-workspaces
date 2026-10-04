@@ -38,7 +38,7 @@ else
 				value="${value:1:${#value}-2}"
 			fi
 			printf -v "${key}" '%s' "${value}"
-			export "${key}"
+			export "${key?}"
 		done < "${config_file}"
 	}
 	list_users() {
