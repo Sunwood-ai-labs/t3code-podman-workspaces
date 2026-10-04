@@ -54,6 +54,8 @@ Point wildcard DNS `*.t3.example.internal` to the Linux host's reachable IP addr
 192.0.2.10 user1.t3.example.internal user2.t3.example.internal user3.t3.example.internal
 ```
 
+Without hosts file access, set `T3_DOMAIN=t3.localhost` in `config.env` for a trial on the same machine: Chromium-based browsers and Firefox resolve `*.localhost` to the loopback address, so `https://user1.t3.localhost:8443` works without DNS.
+
 The default is Caddy `tls internal`. After Caddy first starts, an administrator must securely extract **only `root.crt`** from the `t3code-caddy-data` volume and distribute it to managed internal clients. Inspect the actual volume layout; `podman volume mount t3code-caddy-data` is one way to locate its contents, and rootless mounting may require `podman unshare`. Do not assume a fixed host storage path. See [Podman's volume mounting documentation](https://docs.podman.io/en/latest/markdown/podman-volume-mount.1.html).
 
 Verify the certificate's fingerprint through a trusted administrator channel, then import it into the clients' OS/browser trusted root store using your organization’s certificate management process. **Never distribute the CA private root key (`root.key`) or the entire data volume.** Containers do not automatically establish trust on client machines; see [Caddy's local HTTPS documentation](https://caddyserver.com/docs/automatic-https#local-https).
@@ -111,7 +113,9 @@ The image and operations documents are being prepared separately; links may be u
 
 Initial implementation, integration-tested once on 2026-10-04 with three users on a rootless Podman 5.8 development machine. HTTPS and WebSocket proxying, pairing, per-user session separation, network isolation between workspaces, resource limits, and data persistence across restarts passed. See the [integration test record](docs/integration-test.md).
 
-**Not verified:** a real browser session through the proxy, running agents with real credentials, a production Linux host and host reboot, SSO, and outbound filtering (not implemented). T3 Code is on the `0.0.x` release line; validate behavior and upgrades in your environment.
+A headless Chrome session through the proxy also paired, completed setup, added `/workspace` as a project, and used the terminal.
+
+**Not verified:** running agents with real credentials, a production Linux host and host reboot, SSO, and outbound filtering (not implemented). T3 Code is on the `0.0.x` release line; validate behavior and upgrades in your environment.
 
 ## License
 

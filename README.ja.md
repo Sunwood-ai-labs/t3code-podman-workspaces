@@ -54,6 +54,8 @@ Caddy は3つのネットワークに参加し、各ホスト名への要求を�
 192.0.2.10 user1.t3.example.internal user2.t3.example.internal user3.t3.example.internal
 ```
 
+hosts ファイルを編集できない場合は、同じマシン上での試用に限り、`config.env` で `T3_DOMAIN=t3.localhost` にできます。Chromium 系ブラウザーと Firefox は `*.localhost` をループバックアドレスに解決するので、DNS なしで `https://user1.t3.localhost:8443` を開けます。
+
 既定は Caddy の `tls internal` です。Caddy の初回起動後、管理者が `t3code-caddy-data` ボリュームから **`root.crt` のみ**を安全に取り出し、管理対象の社内端末へ配布します。実際のボリューム構成を確認してください。内容の場所を調べる方法には `podman volume mount t3code-caddy-data` があり、rootless 環境では `podman unshare` が必要になる場合があります。ホストの保存先を固定パスと決めつけないでください。[Podman のボリュームマウント文書](https://docs.podman.io/en/latest/markdown/podman-volume-mount.1.html)も参照してください。
 
 管理者との信頼できる経路で証明書のフィンガープリントを確認し、組織の証明書管理手順に従って OS/ブラウザーの信頼されたルート証明書ストアへ登録します。**CA の秘密ルート鍵（`root.key`）やデータボリューム全体は配布しません。** コンテナの起動だけではクライアント端末に信頼設定されません。[Caddy のローカル HTTPS 文書](https://caddyserver.com/docs/automatic-https#local-https)を参照してください。
@@ -111,7 +113,9 @@ Caddy のアクセスログは stdout/journald を想定し、保存期間や監
 
 初期実装です。2026-10-04 に、rootless Podman 5.8 の開発用マシン上で 3 ユーザー構成の結合テストを 1 回実施しました。HTTPS と WebSocket のプロキシ、ペアリング、ユーザーごとのセッション分離、ワークスペース間のネットワーク分離、リソース制限、再起動後のデータ保持を確認しています。詳細は[結合テストの記録](docs/integration-test.md)を参照してください。
 
-**未検証:** 実ブラウザーでのプロキシ経由の操作、実際の資格情報でのエージェント実行、本番 Linux ホストとホスト再起動、SSO、外向き通信の制限(未実装)。T3 Code は `0.0.x` 系のため、動作と更新は利用環境で確認してください。
+ヘッドレス Chrome でも、プロキシ経由でペアリング、初期設定、`/workspace` のプロジェクト追加、ターミナル操作を確認しました。
+
+**未検証:** 実際の資格情報でのエージェント実行、本番 Linux ホストとホスト再起動、SSO、外向き通信の制限(未実装)。T3 Code は `0.0.x` 系のため、動作と更新は利用環境で確認してください。
 
 ## ライセンス
 

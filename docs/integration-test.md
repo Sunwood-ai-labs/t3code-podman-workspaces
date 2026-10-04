@@ -25,7 +25,12 @@ This is a single-run record on a development machine, not a production Linux hos
 | Limits | `podman inspect` | Memory 4 GiB, 2 CPUs, PID limit 2048, all capabilities dropped, `no-new-privileges`, no published ports. |
 | Persistence | `systemctl --user restart`, and `uninstall.sh` followed by `install.sh` | Paired session, files in `/workspace` and `/home/dev`, and Caddy's CA survived. `uninstall.sh` kept all 11 volumes. |
 | Crash recovery | `podman kill t3code-user3` | Restarted by systemd within about 15 seconds. |
+| Browser | Headless Chrome 1360x860 driven by Playwright against `https://user1.t3.localhost:8443` (certificate errors ignored) | Pairing link signed in and redirected to the Welcome flow; the three setup steps completed; `/workspace` was added as a project from the UI; the WebSocket stayed open; the built-in terminal ran `id` as `dev` in `/workspace`; sending a message started Claude Code, which stopped with "Not logged in" because no credentials were configured. |
 | Idle memory | `scripts/status.sh` | About 250–330 MB per workspace. |
+
+![Browser session through the proxy](images/browser-session.png)
+
+The browser run used `T3_DOMAIN=t3.localhost`, because Chromium resolves `*.localhost` to the loopback address without a hosts file entry. The `curl` checks used the default domain.
 
 ## Found and fixed during the test
 
@@ -38,12 +43,14 @@ This is a single-run record on a development machine, not a production Linux hos
 
 - A workspace can reach Caddy on its own network and request another user's hostname. This is the same access as the public URL and still requires that workspace's pairing or session.
 - The first health check runs before the server is listening, which leaves one failed transient `podman healthcheck run` unit per start in `systemctl --user --failed`. The container still becomes `healthy`. Clear it with `systemctl --user reset-failed`.
+- `--auto-bootstrap-project-from-cwd` did not create a project: the UI showed "No projects yet" after pairing, and `/workspace` had to be added with **Add project → Local folder**.
+- The web UI contacts `clerk.t3.codes` (the optional T3 Connect sign-in) from the browser. The workspace works without signing in.
 - `t3 serve` prints an initial pairing URL with a token to the container log at startup. Restrict access to the journal of the deployment account.
 
 ## Not verified
 
-- A real browser session through the proxy (the UI, the Welcome flow, and project auto-bootstrap from `/workspace`).
-- Running Claude Code or Codex with real credentials inside a workspace.
+- A browser that trusts Caddy's internal CA (the browser run ignored certificate errors), and browsers other than Chrome.
+- Running Claude Code or Codex with real credentials inside a workspace. The agent process starts, but no authenticated turn was run.
 - A production Linux host, a host reboot, SELinux enforcing, and architectures other than amd64.
 - SSO through `forward_auth`, and replacing the internal CA with a corporate certificate.
 - Outbound filtering and restricting access to internal networks (not implemented).
